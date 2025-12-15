@@ -30,9 +30,9 @@
  * }
  */
 
-import { VERSION, APP_NAME, APP_TITLE } from '@/lib/constants.ts';
-import { scanCrashLog, detectGame } from '@/lib/scan-log/index.ts';
+import { APP_NAME, APP_TITLE, VERSION } from '@/lib/constants.ts';
 import { readTextFile } from '@/lib/file-io/index.ts';
+import { detectGame, scanCrashLog } from '@/lib/scan-log/index.ts';
 import type { ScanConfig, SupportedGame } from '@/types/index.ts';
 
 /** IPC command types */

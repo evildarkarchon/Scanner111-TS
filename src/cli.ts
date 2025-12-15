@@ -119,6 +119,54 @@ async function handleScan(
   } else {
     console.log(chalk.green('No issues detected'));
   }
+
+  // Display FormID Analysis results
+  if (result.formIdAnalysis && result.formIdAnalysis.matches.length > 0) {
+    console.log(chalk.gray(`${'─'.repeat(60)}`));
+    console.log(chalk.bold.magenta('======== FORM ID SUSPECTS ========'));
+    console.log('');
+
+    for (const match of result.formIdAnalysis.matches) {
+      if (match.description) {
+        console.log(
+          chalk.white(`- Form ID: ${chalk.yellow(match.formId)} | `) +
+            chalk.cyan(`[${match.plugin}]`) +
+            chalk.white(` | ${match.description} | ${match.count}`)
+        );
+      } else {
+        console.log(
+          chalk.white(`- Form ID: ${chalk.yellow(match.formId)} | `) +
+            chalk.cyan(`[${match.plugin}]`) +
+            chalk.white(` | ${match.count}`)
+        );
+      }
+    }
+
+    console.log('');
+    console.log(
+      chalk.gray('[Last number counts how many times each Form ID shows up in the crash log.]')
+    );
+
+    if (result.formIdAnalysis.generatorName) {
+      console.log(
+        chalk.gray(
+          `These Form IDs were caught by ${result.formIdAnalysis.generatorName} and some of them might be related to this crash.`
+        )
+      );
+    }
+
+    console.log(
+      chalk.gray(
+        'You can try searching any listed Form IDs in xEdit and see if they lead to relevant records.'
+      )
+    );
+    console.log('');
+  } else if (result.formIdAnalysis) {
+    console.log(chalk.gray(`${'─'.repeat(60)}`));
+    console.log(chalk.bold.magenta('======== FORM ID SUSPECTS ========'));
+    console.log(chalk.gray("* COULDN'T FIND ANY FORM ID SUSPECTS *"));
+    console.log('');
+  }
 }
 
 /**

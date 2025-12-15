@@ -1,6 +1,6 @@
-import { useState, useCallback } from 'react';
-import { Header } from './components/Header';
+import { useCallback, useState } from 'react';
 import { FileDropZone } from './components/FileDropZone';
+import { Header } from './components/Header';
 import { ScanResults } from './components/ScanResults';
 import { StatusBar } from './components/StatusBar';
 import type { ScanResult, ScanStatus } from './types';
@@ -57,9 +57,7 @@ function App() {
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4" />
               <p className="text-slate-400">Scanning crash log...</p>
               {currentFile && (
-                <p className="text-slate-500 text-sm mt-2 truncate max-w-md">
-                  {currentFile}
-                </p>
+                <p className="text-slate-500 text-sm mt-2 truncate max-w-md">{currentFile}</p>
               )}
             </div>
           </div>

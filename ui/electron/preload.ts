@@ -11,8 +11,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   // File dialogs
   openFileDialog: () => ipcRenderer.invoke('open-file-dialog'),
-  saveFileDialog: (defaultName: string) =>
-    ipcRenderer.invoke('save-file-dialog', defaultName),
+  saveFileDialog: (defaultName: string) => ipcRenderer.invoke('save-file-dialog', defaultName),
 });
 
 // Type definitions for the exposed API

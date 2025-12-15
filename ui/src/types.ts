@@ -9,6 +9,20 @@ export interface ScanResult {
   issues: Issue[];
   metadata?: ScanMetadata;
   rawOutput?: string;
+  formIdAnalysis?: FormIdAnalysisResult;
+}
+
+export interface FormIdMatch {
+  formId: string;
+  plugin: string;
+  description?: string;
+  count: number;
+}
+
+export interface FormIdAnalysisResult {
+  matches: FormIdMatch[];
+  databaseAvailable: boolean;
+  generatorName?: string;
 }
 
 export interface Issue {

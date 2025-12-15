@@ -20,6 +20,14 @@ export type {
   PathSettings,
   ScannerSettings,
   OutputSettings,
+  // FormID types
+  ExtractedFormId,
+  FormIdDatabaseEntry,
+  FormIdMatch,
+  FormIdAnalysisResult,
+  FormIdAnalysisConfig,
+  PluginEntry,
+  PluginList,
 } from '@/types/index.ts';
 
 // Constants
@@ -82,3 +90,52 @@ export {
   isWindows,
   getHomeDir,
 } from '@/lib/utils/index.ts';
+
+// FormID Analysis
+export {
+  // Extractor
+  FORMID_PATTERN,
+  extractFormIds,
+  countFormIdOccurrences,
+  parsePluginIndex,
+  parseRecordId,
+  shouldFilterFormId,
+  // Resolver
+  resolveFormIds,
+  resolvePluginIndex,
+  pluginIndexToHex,
+  groupByPlugin,
+  isBaseGameFormId,
+  isLightPluginFormId,
+  // Analyzer
+  analyzeFormIds,
+  analyzeFormIdsSync,
+  formatFormIdAnalysis,
+  type ResolvedFormId,
+} from '@/lib/formid/index.ts';
+
+// FormID Database
+export {
+  FormIdDatabaseManager,
+  formIdDatabase,
+  type FormIdDbResult,
+  type FormIdQuery,
+} from '@/lib/database/formid-db.ts';
+
+export {
+  getAppDataDirectory,
+  getDatabasesDirectory,
+  getFormIdDatabasePaths,
+  getMainFormIdDatabasePath,
+  getLocalFormIdDatabasePath,
+  databaseExists,
+  findAvailableDatabases,
+} from '@/lib/database/paths.ts';
+
+// Plugin List Parser
+export {
+  parsePluginEntry,
+  parsePluginList,
+  getPluginByIndex,
+  pluginListToDict,
+} from '@/lib/scan-log/plugins.ts';

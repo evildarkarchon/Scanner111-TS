@@ -75,6 +75,14 @@ cd ui && bun run electron:build  # Build distributable app
 - `DatabaseManager` class with singleton `database` export
 - Loads YAML pattern files and matches against log lines
 - Supports game-specific pattern filtering
+- `FormIdDatabaseManager` for SQLite FormID database lookups
+- `formIdDatabase` singleton for FormID queries
+
+**`src/lib/formid/`** - FormID analysis system
+- `extractFormIds()` - Extracts FormIDs from crash log callstack
+- `resolvePluginIndex()` - Maps FormID prefixes to plugin names
+- `analyzeFormIds()` - Orchestrates extraction, resolution, and database lookup
+- `formatFormIdAnalysis()` - Formats results for display
 
 **`src/lib/message-handler/`** - Output system
 - `MessageHandler` singleton for centralized messaging
@@ -92,6 +100,7 @@ Core types in `src/types/index.ts`:
 - `SupportedGame`: `'fallout4' | 'skyrim'`
 - `ScanConfig` / `ScanResult` / `Issue` - Scanning pipeline types
 - `DatabaseEntry` - Pattern definition structure
+- FormID types: `ExtractedFormId`, `FormIdMatch`, `FormIdAnalysisResult`, `PluginList`
 
 ### Entry Points
 - `src/cli.ts` - CLI using Commander.js (supports `--json` flag for IPC)

@@ -8,7 +8,16 @@
 import { CRASH_LOG_PATTERNS } from '@/lib/constants.ts';
 import { database } from '@/lib/database/index.ts';
 import { readTextFile } from '@/lib/file-io/index.ts';
-import type { Issue, ScanConfig, ScanMetadata, ScanResult, SupportedGame } from '@/types/index.ts';
+import { analyzeFormIds } from '@/lib/formid/analyzer.ts';
+import { parsePluginList } from '@/lib/scan-log/plugins.ts';
+import type {
+  FormIdAnalysisResult,
+  Issue,
+  ScanConfig,
+  ScanMetadata,
+  ScanResult,
+  SupportedGame,
+} from '@/types/index.ts';
 
 /** Segment types in crash logs */
 export type SegmentType =
@@ -104,11 +113,12 @@ export function parseLogSegments(content: string, game: SupportedGame): ParsedCr
 
   // Detect generator from header
   const headerMatch = content.match(
-    /(?:Buffout4|NetScriptFramework|Crash Logger)\s*(?:v?(\d+\.\d+(?:\.\d+)?))?/i
+    /(Buffout\s*4|NetScriptFramework|Crash Logger)\s*(?:v?(\d+\.\d+(?:\.\d+)?))?/i
   );
   if (headerMatch) {
-    generator = headerMatch[0]?.split(/\s+/)[0];
-    generatorVersion = headerMatch[1];
+    // Normalize "Buffout 4" (with any whitespace) to "Buffout 4"
+    generator = headerMatch[1]?.replace(/\s+/g, ' ');
+    generatorVersion = headerMatch[2];
   }
 
   // Simple segment detection based on common patterns
@@ -117,7 +127,7 @@ export function parseLogSegments(content: string, game: SupportedGame): ParsedCr
     const lineLower = line.toLowerCase();
     let segmentType: SegmentType = 'unknown';
 
-    // Detect segment type
+    // Detect segment type - only check for segment headers (lines that START a new segment)
     if (lineLower.includes('call stack') || lineLower.includes('callstack')) {
       segmentType = 'callstack';
     } else if (lineLower.includes('register') || /^[re][abcd]x\s*:/i.test(line)) {
@@ -126,12 +136,16 @@ export function parseLogSegments(content: string, game: SupportedGame): ParsedCr
       segmentType = 'modules';
     } else if (lineLower.includes('plugins:') || lineLower.includes('plugin list')) {
       segmentType = 'plugins';
-    } else if (i < 20) {
+    } else if (i < 20 && currentSegment === null) {
+      // Only detect header at start, before any other segment is found
       segmentType = 'header';
     }
 
     // Handle segment transitions
-    if (segmentType !== 'unknown' && (currentSegment === null || segmentType !== currentSegment.type)) {
+    if (
+      segmentType !== 'unknown' &&
+      (currentSegment === null || segmentType !== currentSegment.type)
+    ) {
       if (currentSegment) {
         currentSegment.endLine = i - 1;
         segments.push(currentSegment);
@@ -236,6 +250,31 @@ export async function scanCrashLog(config: ScanConfig): Promise<ScanResult> {
     }
   }
 
+  // FormID Analysis
+  let formIdAnalysis: FormIdAnalysisResult | undefined;
+
+  if (config.enableFormIdAnalysis !== false) {
+    // Find callstack and plugins segments
+    const callstackSegment = parsed.segments.find((s) => s.type === 'callstack');
+    const pluginsSegment = parsed.segments.find((s) => s.type === 'plugins');
+
+    if (callstackSegment) {
+      const pluginList = parsePluginList(pluginsSegment);
+
+      formIdAnalysis = await analyzeFormIds(callstackSegment.lines, pluginList, {
+        game,
+        showFormIdValues: config.showFormIdValues,
+        formIdDatabasePaths: config.formIdDatabasePaths,
+        enabled: config.enableFormIdAnalysis,
+      });
+
+      // Set generator name if available
+      if (formIdAnalysis && parsed.generator) {
+        formIdAnalysis.generatorName = parsed.generator;
+      }
+    }
+  }
+
   const endTime = new Date();
 
   const metadata: ScanMetadata = {
@@ -251,6 +290,6 @@ export async function scanCrashLog(config: ScanConfig): Promise<ScanResult> {
     status: 'completed',
     issues,
     metadata,
+    formIdAnalysis,
   };
 }
-
