@@ -1,0 +1,64 @@
+{
+  "name": "classic-scanner-ui",
+  "version": "0.1.0",
+  "description": "CLASSIC Scanner - Crash Log Analysis Tool",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build && electron-builder",
+    "build:vite": "vite build",
+    "preview": "vite preview",
+    "electron:dev": "concurrently \"vite\" \"electron .\"",
+    "electron:build": "vite build && electron-builder",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^4.5.0",
+    "autoprefixer": "^10.4.21",
+    "concurrently": "^9.1.0",
+    "electron": "^35.0.0",
+    "electron-builder": "^26.0.0",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.0",
+    "vite-plugin-electron": "^0.30.0",
+    "vite-plugin-electron-renderer": "^0.14.6"
+  },
+  "build": {
+    "appId": "com.classic.scanner",
+    "productName": "CLASSIC Scanner",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ],
+    "win": {
+      "target": ["nsis", "portable"],
+      "icon": "public/icon.ico"
+    },
+    "mac": {
+      "target": ["dmg"],
+      "icon": "public/icon.icns"
+    },
+    "linux": {
+      "target": ["AppImage"],
+      "icon": "public/icon.png"
+    },
+    "extraResources": [
+      {
+        "from": "../src",
+        "to": "scanner",
+        "filter": ["**/*", "!**/*.test.ts"]
+      }
+    ]
+  }
+}

@@ -1,0 +1,63 @@
+# Dependencies
+node_modules/
+jspm_packages/
+bower_components
+web_modules/
+
+# Build outputs
+dist/
+build/Release
+*.tsbuildinfo
+*.tgz
+
+# Bun
+bun.lockb
+
+# Test artifacts
+.test-temp/
+coverage/
+*.lcov
+.nyc_output
+
+# IDE
+.idea/
+.vscode/
+.vscode-test
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Cache
+.cache/
+.parcel-cache
+.eslintcache
+.stylelintcache
+.npm
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Source code from port - read only reference
+# Code_to_Port/
