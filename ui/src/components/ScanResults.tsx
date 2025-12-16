@@ -60,6 +60,7 @@ export function ScanResults({ result, onReset }: ScanResultsProps) {
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -85,6 +86,7 @@ export function ScanResults({ result, onReset }: ScanResultsProps) {
       {/* Actions */}
       <div className="flex justify-center gap-4 pt-4">
         <button
+          type="button"
           onClick={onReset}
           className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg transition-colors"
         >

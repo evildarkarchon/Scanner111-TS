@@ -19,10 +19,17 @@ export function Header({ onOpenFile, onReset }: HeaderProps) {
 
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={onOpenFile}
             className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors flex items-center gap-2"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -33,6 +40,7 @@ export function Header({ onOpenFile, onReset }: HeaderProps) {
             Open Log
           </button>
           <button
+            type="button"
             onClick={onReset}
             className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm rounded-lg transition-colors"
           >

@@ -110,7 +110,10 @@ ipcMain.handle('get-app-info', async () => {
 });
 
 ipcMain.handle('open-file-dialog', async () => {
-  const result = await dialog.showOpenDialog(mainWindow!, {
+  if (!mainWindow) {
+    return null;
+  }
+  const result = await dialog.showOpenDialog(mainWindow, {
     properties: ['openFile'],
     filters: [
       { name: 'Crash Logs', extensions: ['log', 'txt'] },
@@ -126,7 +129,10 @@ ipcMain.handle('open-file-dialog', async () => {
 });
 
 ipcMain.handle('save-file-dialog', async (_event, defaultName: string) => {
-  const result = await dialog.showSaveDialog(mainWindow!, {
+  if (!mainWindow) {
+    return null;
+  }
+  const result = await dialog.showSaveDialog(mainWindow, {
     defaultPath: defaultName,
     filters: [
       { name: 'Text Files', extensions: ['txt'] },

@@ -45,7 +45,13 @@ function SeverityIcon({ severity }: { severity: MessageSeverity }) {
 
   if (severity === 'critical' || severity === 'error') {
     return (
-      <svg className={`w-5 h-5 ${color}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg
+        className={`w-5 h-5 ${color}`}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -58,7 +64,13 @@ function SeverityIcon({ severity }: { severity: MessageSeverity }) {
 
   if (severity === 'warning') {
     return (
-      <svg className={`w-5 h-5 ${color}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg
+        className={`w-5 h-5 ${color}`}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -70,7 +82,13 @@ function SeverityIcon({ severity }: { severity: MessageSeverity }) {
   }
 
   return (
-    <svg className={`w-5 h-5 ${color}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg
+      className={`w-5 h-5 ${color}`}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"

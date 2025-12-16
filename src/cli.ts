@@ -95,6 +95,7 @@ async function performScan(
 /**
  * Handler for human-readable scan output.
  */
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: CLI display logic with necessary conditional formatting
 async function handleScan(logPath: string, options: ScanOptions): Promise<void> {
   const scanResult = await performScan(logPath, options, 'human');
   if (!scanResult) return;

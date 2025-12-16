@@ -103,6 +103,7 @@ export function detectGame(content: string, fileName?: string): SupportedGame | 
  * @param game - Target game
  * @returns Parsed crash log structure
  */
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: segment parsing requires sequential state machine logic
 export function parseLogSegments(content: string, game: SupportedGame): ParsedCrashLog {
   const lines = content.split(/\r?\n/);
   const segments: LogSegment[] = [];
@@ -182,6 +183,7 @@ export function parseLogSegments(content: string, game: SupportedGame): ParsedCr
  * @param config - Scan configuration
  * @returns Scan result with detected issues
  */
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: main scan orchestration with necessary error handling paths
 export async function scanCrashLog(config: ScanConfig): Promise<ScanResult> {
   const startTime = new Date();
   const issues: Issue[] = [];

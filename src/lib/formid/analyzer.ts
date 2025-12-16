@@ -41,6 +41,7 @@ import type {
  * console.log(result.matches);
  * ```
  */
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: orchestration function with inherent complexity
 export async function analyzeFormIds(
   callstackLines: string[],
   pluginList: PluginList,

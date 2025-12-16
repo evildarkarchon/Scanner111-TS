@@ -90,22 +90,21 @@ export function extractFormIds(lines: string[]): ExtractedFormId[] {
     // Reset regex lastIndex for global pattern
     FORMID_PATTERN.lastIndex = 0;
 
-    let match: RegExpExecArray | null;
-    while ((match = FORMID_PATTERN.exec(line)) !== null) {
+    let match: RegExpExecArray | null = FORMID_PATTERN.exec(line);
+    while (match !== null) {
       const formIdHex = match[1]?.toUpperCase();
-      if (!formIdHex) continue;
 
-      // Skip FF-prefix FormIDs (dynamic/runtime)
-      if (shouldFilterFormId(formIdHex)) {
-        continue;
+      // Only process valid, non-filtered FormIDs
+      if (formIdHex && !shouldFilterFormId(formIdHex)) {
+        formIds.push({
+          formId: formIdHex,
+          pluginIndex: parsePluginIndex(formIdHex),
+          recordId: parseRecordId(formIdHex),
+          lineNumber,
+        });
       }
 
-      formIds.push({
-        formId: formIdHex,
-        pluginIndex: parsePluginIndex(formIdHex),
-        recordId: parseRecordId(formIdHex),
-        lineNumber,
-      });
+      match = FORMID_PATTERN.exec(line);
     }
   }
 

@@ -37,8 +37,21 @@ export function FileDropZone({ onFileSelect, onOpenDialog }: FileDropZoneProps) 
     [onFileSelect]
   );
 
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        onOpenDialog();
+      }
+    },
+    [onOpenDialog]
+  );
+
   return (
+    // biome-ignore lint/a11y/useSemanticElements: div is appropriate for drag-and-drop zone with visual feedback
     <div
+      role="button"
+      tabIndex={0}
       className={`
         border-2 border-dashed rounded-xl p-12 text-center transition-all cursor-pointer
         ${
@@ -51,6 +64,7 @@ export function FileDropZone({ onFileSelect, onOpenDialog }: FileDropZoneProps) 
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       onClick={onOpenDialog}
+      onKeyDown={handleKeyDown}
     >
       <div className="flex flex-col items-center gap-4">
         <div
@@ -61,6 +75,7 @@ export function FileDropZone({ onFileSelect, onOpenDialog }: FileDropZoneProps) 
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
