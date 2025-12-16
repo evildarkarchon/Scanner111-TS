@@ -48,18 +48,27 @@ function printBanner(): void {
 }
 
 /**
- * Main scan command handler.
+ * Shared scan options type.
  */
-async function handleScan(
+interface ScanOptions {
+  game?: string;
+  verbose?: boolean;
+  maxErrors?: number;
+}
+
+/**
+ * Core scan logic - performs the actual scan and returns the result.
+ */
+async function performScan(
   logPath: string,
-  options: { game?: string; verbose?: boolean; maxErrors?: number; json?: boolean }
-): Promise<void> {
+  options: ScanOptions,
+  outputMode: 'human' | 'json'
+): Promise<{ result: Awaited<ReturnType<typeof scanCrashLog>>; resolvedPath: string } | null> {
   const resolvedPath = resolve(logPath);
-  const jsonOutput = options.json ?? false;
 
   // Validate file exists
   if (!(await exists(resolvedPath))) {
-    if (jsonOutput) {
+    if (outputMode === 'json') {
       console.log(JSON.stringify({ error: `File not found: ${resolvedPath}` }));
     } else {
       console.error(chalk.red(`Error: File not found: ${resolvedPath}`));
@@ -67,7 +76,7 @@ async function handleScan(
     process.exit(1);
   }
 
-  if (!jsonOutput) {
+  if (outputMode === 'human') {
     console.log(chalk.gray(`Scanning: ${resolvedPath}`));
   }
 
@@ -80,11 +89,17 @@ async function handleScan(
     maxErrors: options.maxErrors,
   });
 
-  // JSON output mode - for Electron IPC
-  if (jsonOutput) {
-    console.log(JSON.stringify(result));
-    return;
-  }
+  return { result, resolvedPath };
+}
+
+/**
+ * Handler for human-readable scan output.
+ */
+async function handleScan(logPath: string, options: ScanOptions): Promise<void> {
+  const scanResult = await performScan(logPath, options, 'human');
+  if (!scanResult) return;
+
+  const { result } = scanResult;
 
   // Display results
   console.log(chalk.gray(`\n${'─'.repeat(60)}`));
@@ -170,6 +185,26 @@ async function handleScan(
 }
 
 /**
+ * Handler for JSON output (used by Electron IPC).
+ */
+async function handleJson(logPath: string, options: ScanOptions): Promise<void> {
+  const scanResult = await performScan(logPath, options, 'json');
+  if (!scanResult) return;
+
+  console.log(JSON.stringify(scanResult.result));
+}
+
+/**
+ * Create scan command options (shared between default and scan commands).
+ */
+function addScanOptions(cmd: Command): Command {
+  return cmd
+    .option('-g, --game <game>', 'Target game (fallout4 or skyrim)', 'fallout4')
+    .option('-v, --verbose', 'Enable verbose output')
+    .option('-m, --max-errors <n>', 'Maximum number of errors to report', Number.parseInt);
+}
+
+/**
  * Main entry point.
  */
 async function main(): Promise<void> {
@@ -177,14 +212,31 @@ async function main(): Promise<void> {
 
   program.name('classic').description(APP_TITLE).version(VERSION);
 
-  program
+  // Default command: classic <log-path> (scans with human output)
+  const defaultCmd = program
+    .argument('[log-path]', 'Path to crash log file')
+    .action(async (logPath: string | undefined, options: ScanOptions) => {
+      if (logPath) {
+        await handleScan(logPath, options);
+      } else {
+        program.help();
+      }
+    });
+  addScanOptions(defaultCmd);
+
+  // Explicit scan command: classic scan <log-path>
+  const scanCmd = program
     .command('scan <log-path>')
     .description('Scan a crash log file for issues')
-    .option('-g, --game <game>', 'Target game (fallout4 or skyrim)', 'fallout4')
-    .option('-v, --verbose', 'Enable verbose output')
-    .option('-m, --max-errors <n>', 'Maximum number of errors to report', Number.parseInt)
-    .option('-j, --json', 'Output results as JSON (for programmatic use)')
     .action(handleScan);
+  addScanOptions(scanCmd);
+
+  // JSON command: classic json <log-path> (for Electron IPC)
+  const jsonCmd = program
+    .command('json <log-path>')
+    .description('Scan a crash log and output JSON (for programmatic use)')
+    .action(handleJson);
+  addScanOptions(jsonCmd);
 
   program
     .command('info')
@@ -195,8 +247,8 @@ async function main(): Promise<void> {
       console.log(chalk.gray(`Node compatibility: ${process.version}`));
     });
 
-  // Show banner unless JSON output mode
-  const isJsonMode = process.argv.includes('--json') || process.argv.includes('-j');
+  // Show banner unless using json command
+  const isJsonMode = process.argv[2] === 'json';
   if (!isJsonMode) {
     printBanner();
   }

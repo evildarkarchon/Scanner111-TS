@@ -62,11 +62,10 @@ function getScannerPath(): string {
 // IPC Handlers
 ipcMain.handle('scan-crash-log', async (_event, filePath: string, game?: string) => {
   return new Promise((resolve, reject) => {
-    const args = ['run', getScannerPath(), 'scan', filePath];
+    const args = ['run', getScannerPath(), 'json', filePath];
     if (game) {
       args.push('--game', game);
     }
-    args.push('--json');
 
     const child = spawn(getBunPath(), args, {
       cwd: isDev ? join(__dirname, '../..') : process.resourcesPath,
